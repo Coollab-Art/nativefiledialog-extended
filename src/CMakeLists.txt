@@ -94,6 +94,10 @@ if(nfd_PLATFORM STREQUAL PLATFORM_LINUX)
   if(NFD_APPEND_EXTENSION)
     target_compile_definitions(${TARGET_NAME} PRIVATE NFD_APPEND_EXTENSION)
   endif()
+  option(NFD_CASE_SENSITIVE_FILTER "Make filters case sensitive" OFF)
+  if(NFD_CASE_SENSITIVE_FILTER)
+    target_compile_definitions(${TARGET_NAME} PRIVATE NFD_CASE_SENSITIVE_FILTER)
+  endif()
 endif()
 
 if(nfd_PLATFORM STREQUAL PLATFORM_MACOS)
@@ -128,6 +132,14 @@ set_target_properties(${TARGET_NAME} PROPERTIES
 
 if (NFD_INSTALL)
   include(GNUInstallDirs)
+  include(CMakePackageConfigHelpers)
+
+  write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}-config-version.cmake"
+    VERSION "${PROJECT_VERSION}"
+    COMPATIBILITY SameMajorVersion
+  )
+
+  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}-config-version.cmake" DESTINATION lib/cmake/${TARGET_NAME})
 
   install(TARGETS ${TARGET_NAME} EXPORT ${TARGET_NAME}-export
     LIBRARY DESTINATION ${LIB_INSTALL_DIR} ARCHIVE DESTINATION ${LIB_INSTALL_DIR} PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}    
